@@ -61,13 +61,71 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
 #define GPIO0_IRQSTATUSRAW	(AM33XX_GPIO0_BASE + 0x024)
 #define GPIO1_IRQSTATUSRAW	(AM33XX_GPIO1_BASE + 0x024)
 
-bool board_ti_rev_is(char *rev_tag, int cmp_len)
+/**
+ * board_ti_get_config() - Get board config for TI EVMs
+ *
+ * Return: Empty string if eeprom wasn't read.
+ *	   Board config otherwise
+ */
+char *board_ti_get_config(void)
 {
-       return false;
+	// I think the only place where this is used is
+	// board/ti/am335x/board.h:85 
+	// therefore it seems that you can return anything 
+	// that is not "SKU#02"
+	return "NOCONFIG";
 }
+
+/**
+ * board_ti_is() - Board detection logic for TI EVMs
+ * @name_tag:	Tag used in eeprom for the board
+ *
+ * Return: false if board information does not match OR eeprom wasn't read.
+ *	   true otherwise
+ */
+bool board_ti_is(char *name_tag)
+{
+	// only return true if it is a A335BONE
+	if(!strcmp("A335BONE", name_tag))
+		return true;
+	return false;
+}
+
+/**
+ * board_ti_get_rev() - Get board revision for TI EVMs
+ *
+ * Return: Empty string if eeprom wasn't read.
+ *	   Board revision otherwise
+ */
 char *board_ti_get_rev(void)
 {
-       return "XYZW";
+	// I think this should return "BBG".
+	// Search board_ti_get_rev in  bela_uboot_config.patch for other
+	// possible values.
+	return "BBG";
+}
+
+/**
+ * set_board_info_env() - Setup commonly used board information environment vars
+ * @name:	Name of the board
+ *
+ * If name is NULL, default_name is used.
+ */
+void set_board_info_env(char *name)
+{
+	// copied this from the implementation in board_detect.c
+	// The original implemetnation reads values from the eproom and sets
+	// them as environment variables, with default value of "unknown".
+	// So let's just use that (except for the name)
+	char *unknown = "unknown";
+
+	if (name)
+		setenv("board_name", name);
+	else
+		setenv("board_name", unknown);
+
+	setenv("board_rev", unknown);
+	setenv("board_serial", unknown);
 }
 
 /*
