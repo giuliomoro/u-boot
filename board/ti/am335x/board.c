@@ -61,6 +61,15 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
 #define GPIO0_IRQSTATUSRAW	(AM33XX_GPIO0_BASE + 0x024)
 #define GPIO1_IRQSTATUSRAW	(AM33XX_GPIO1_BASE + 0x024)
 
+bool board_ti_rev_is(char *rev_tag, int cmp_len)
+{
+       return false;
+}
+char *board_ti_get_rev(void)
+{
+       return "XYZW";
+}
+
 /*
  * Read header information from EEPROM into global structure.
  */
