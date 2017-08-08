@@ -18,6 +18,7 @@
 
 #include <configs/ti_am335x_common.h>
 #include <environment/ti/dfu.h>
+#define CONFIG_ENV_IS_NOWHERE
 
 #ifndef CONFIG_SPL_BUILD
 # define CONFIG_TIMESTAMP
@@ -61,9 +62,14 @@
 
 #define BOOTENV_DEV_LEGACY_MMC(devtypeu, devtypel, instance) \
 	"bootcmd_" #devtypel #instance "=" \
+	"gpio clear 56; " \
+	"gpio clear 55; " \
+	"gpio clear 54; " \
+	"gpio set 53; " \
+	"setenv devtype mmc; " \
 	"setenv mmcdev " #instance"; "\
-	"setenv bootpart " #instance":2 ; "\
-	"run mmcboot\0"
+	"setenv bootpart " #instance":1 ; "\
+	"run boot\0"
 
 #define BOOTENV_DEV_NAME_LEGACY_MMC(devtypeu, devtypel, instance) \
 	#devtypel #instance " "
@@ -80,83 +86,19 @@
 	func(LEGACY_MMC, legacy_mmc, 0) \
 	func(MMC, mmc, 1) \
 	func(LEGACY_MMC, legacy_mmc, 1) \
-	func(NAND, nand, 0) \
 	func(PXE, pxe, na) \
 	func(DHCP, dhcp, na)
 
 #define CONFIG_BOOTCOMMAND \
-	"if test ${boot_fit} -eq 1; then "	\
-		"run update_to_fit;"	\
-	"fi;"	\
-	"run findfdt; " \
-	"run init_console; " \
-	"run envboot; " \
-	"run distro_bootcmd"
+	"load mmc 0:1 ${loadaddr} uEnv.txt;"	\
+	"env import -t ${loadaddr} ${filesize};"	\
+	"run uenvcmd;"
 
 #include <config_distro_bootcmd.h>
 
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	DEFAULT_LINUX_BOOT_ENV \
-	DEFAULT_MMC_TI_ARGS \
-	DEFAULT_FIT_TI_ARGS \
-	"bootpart=0:2\0" \
-	"bootdir=/boot\0" \
-	"bootfile=zImage\0" \
-	"fdtfile=undefined\0" \
-	"console=ttyO0,115200n8\0" \
-	"partitions=" \
-		"uuid_disk=${uuid_gpt_disk};" \
-		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
-	"optargs=\0" \
-	"ramroot=/dev/ram0 rw\0" \
-	"ramrootfstype=ext2\0" \
-	"spiroot=/dev/mtdblock4 rw\0" \
-	"spirootfstype=jffs2\0" \
-	"spisrcaddr=0xe0000\0" \
-	"spiimgsize=0x362000\0" \
-	"spibusno=0\0" \
-	"spiargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"root=${spiroot} " \
-		"rootfstype=${spirootfstype}\0" \
-	"ramargs=setenv bootargs console=${console} " \
-		"${optargs} " \
-		"root=${ramroot} " \
-		"rootfstype=${ramrootfstype}\0" \
-	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
-	"spiboot=echo Booting from spi ...; " \
-		"run spiargs; " \
-		"sf probe ${spibusno}:0; " \
-		"sf read ${loadaddr} ${spisrcaddr} ${spiimgsize}; " \
-		"bootz ${loadaddr}\0" \
-	"ramboot=echo Booting from ramdisk ...; " \
-		"run ramargs; " \
-		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
-	"findfdt="\
-		"if test $board_name = A335BONE; then " \
-			"setenv fdtfile am335x-bone.dtb; fi; " \
-		"if test $board_name = A335BNLT; then " \
-			"setenv fdtfile am335x-boneblack.dtb; fi; " \
-		"if test $board_name = BBG1; then " \
-			"setenv fdtfile am335x-bonegreen.dtb; fi; " \
-		"if test $board_name = A33515BB; then " \
-			"setenv fdtfile am335x-evm.dtb; fi; " \
-		"if test $board_name = A335X_SK; then " \
-			"setenv fdtfile am335x-evmsk.dtb; fi; " \
-		"if test $board_name = A335_ICE; then " \
-			"setenv fdtfile am335x-icev2.dtb; fi; " \
-		"if test $fdtfile = undefined; then " \
-			"echo WARNING: Could not determine device tree to use; fi; \0" \
-	"init_console=" \
-		"if test $board_name = A335_ICE; then "\
-			"setenv console ttyO3,115200n8;" \
-		"else " \
-			"setenv console ttyO0,115200n8;" \
-		"fi;\0" \
-	NANDARGS \
-	NETARGS \
-	DFUARGS \
 	BOOTENV
 #endif
 
@@ -274,9 +216,7 @@
 #endif
 
 #ifdef CONFIG_USB_MUSB_GADGET
-#define CONFIG_USB_ETHER
-#define CONFIG_USB_ETH_RNDIS
-#define CONFIG_USBNET_HOST_ADDR	"de:ad:be:af:00:00"
+#define CONFIG_USB_FUNCTION_MASS_STORAGE
 #endif /* CONFIG_USB_MUSB_GADGET */
 
 /*
