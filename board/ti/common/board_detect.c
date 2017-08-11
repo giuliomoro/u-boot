@@ -215,30 +215,31 @@ int __maybe_unused ti_i2c_eeprom_am_get(int bus_addr, int dev_addr)
 	ep->version[0] = 0x0;
 	ep->serial[0] = 0x0;
 	ep->config[0] = 0x0;
-
+/*
 	rc = ti_i2c_eeprom_get(bus_addr, dev_addr, TI_EEPROM_HEADER_MAGIC,
 			       sizeof(am_ep), (uint8_t *)&am_ep);
 	if (rc)
 		return rc;
-
-	ep->header = am_ep.header;
-	strlcpy(ep->name, am_ep.name, TI_EEPROM_HDR_NAME_LEN + 1);
+*/
+	ep->header = TI_EEPROM_HEADER_MAGIC;
+	strlcpy(ep->name, "A335BNLT", TI_EEPROM_HDR_NAME_LEN + 1);
 	ti_eeprom_string_cleanup(ep->name);
 
-	/* BeagleBone Green '1' eeprom, board_rev: 0x1a 0x00 0x00 0x00 */
+	/* BeagleBone Green '1' eeprom, board_rev: 0x1a 0x00 0x00 0x00 
 	if (am_ep.version[0] == 0x1a && am_ep.version[1] == 0x00 &&
 	    am_ep.version[2] == 0x00 && am_ep.version[3] == 0x00)
 		strlcpy(ep->version, "BBG1", TI_EEPROM_HDR_REV_LEN + 1);
-	else
-		strlcpy(ep->version, am_ep.version, TI_EEPROM_HDR_REV_LEN + 1);
+	else */
+		strlcpy(ep->version, "00C0", TI_EEPROM_HDR_REV_LEN + 1);
 	ti_eeprom_string_cleanup(ep->version);
-	strlcpy(ep->serial, am_ep.serial, TI_EEPROM_HDR_SERIAL_LEN + 1);
+	strlcpy(ep->serial, "25174P160001", TI_EEPROM_HDR_SERIAL_LEN + 1);
 	ti_eeprom_string_cleanup(ep->serial);
-	strlcpy(ep->config, am_ep.config, TI_EEPROM_HDR_CONFIG_LEN + 1);
-	ti_eeprom_string_cleanup(ep->config);
+//	strlcpy(ep->config, (const char*)0xFFFF, TI_EEPROM_HDR_CONFIG_LEN + 1);
+//	ti_eeprom_string_cleanup(ep->config);
+	memset(ep->config, 0xff, 32);
 
-	memcpy(ep->mac_addr, am_ep.mac_addr,
-	       TI_EEPROM_HDR_NO_OF_MAC_ADDR * TI_EEPROM_HDR_ETH_ALEN);
+//	memcpy(ep->mac_addr, am_ep.mac_addr,
+//	       TI_EEPROM_HDR_NO_OF_MAC_ADDR * TI_EEPROM_HDR_ETH_ALEN);
 
 	return 0;
 }
