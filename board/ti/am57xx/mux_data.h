@@ -10,7 +10,7 @@
 #define _MUX_DATA_BEAGLE_X15_H_
 
 #include <asm/arch/mux_dra7xx.h>
-#define BELA0 {0x294, PIN_OUTPUT_PULLDOWN | M3}
+#define BELA0 {0x294, PIN_OUTPUT_PULLDOWN | M9}
 #define BELA1 {0x2E0, PIN_INPUT_PULLDOWN | M0}
 #define BELA2 {0x2D8, PIN_INPUT | M15}
 #define BELA3 {0x2A8, PIN_INPUT_PULLDOWN | M0}
