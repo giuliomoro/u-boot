@@ -12,20 +12,20 @@
 #include <asm/arch/mux_dra7xx.h>
 #define BELA0 {0x294, PIN_OUTPUT_PULLDOWN | M9}
 #define BELA1 {0x2E0, PIN_INPUT_PULLDOWN | M0}
-#define BELA2 {0x2D8, PIN_INPUT | M15}
+#define BELA2 {0x2D8, PULL_DIS | M15}
 #define BELA3 {0x2A8, PIN_INPUT_PULLDOWN | M0}
 #define BELA4 {0x2DC, PIN_INPUT_PULLDOWN | M0}
-#define BELA5 {0x2D4, PIN_INPUT | M15}
+#define BELA5 {0x2D4, PULL_DIS | M15}
 #define BELA6 {0x2A4, PIN_INPUT_PULLDOWN | M0}
 #define BELA7 {0x114, PIN_OUTPUT_PULLUP | M14}
 #define BELA8 {0x3CC, PIN_OUTPUT_PULLUP | M14}
-#define BELA9 {0x2B8, M15}
+#define BELA9 {0x2B8, PULL_DIS | M15}
 #define BELA10 {0x3C8, PIN_INPUT | M0}
-#define BELA11 {0x2B4, M15}
-#define BELA12 {0x0F0, M15}
+#define BELA11 {0x2B4, PULL_DIS | M15}
+#define BELA12 {0x0F0, PULL_DIS | M15}
 #define BELA13 {0x3C4, PIN_INPUT | M0}
-#define BELA14 {0x29C, M15}
-#define BELA15 {0x3C0, PIN_OUTPUT | M0}
+#define BELA14 {0x29C, PULL_DIS | M15}
+#define BELA15 {0x3C0, PIN_INPUT | M0}
 
 const struct pad_conf_entry core_padconf_array_essential_x15[] = {
 	{GPMC_AD0, (M2 | PIN_INPUT | MANUAL_MODE)},	/* gpmc_ad0.vin3a_d0 */
